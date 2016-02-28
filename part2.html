@@ -1,0 +1,352 @@
+In the previous part of this tutorial, we walked through how to make a very basic version of a ToDo app using Wikimedia's OOjs-UI library. Now it's time to add a way to store and display information from our items.
+
+<h1>Displaying info</h1>
+
+Let's first create a way to view the information we have about our items. We'll start by adding a simple label to our page:
+
+<pre class="lang:default decode:true " >
+$( document ).ready( function () {
+	var input = new OO.ui.TextInputWidget( {
+			placeholder: 'ToDo item',
+            classes: [ 'todo-input' ]
+		} ),
+		list = new OO.ui.SelectWidget( {
+            classes: [ 'todo-list' ]
+        } ),
+		info = new OO.ui.LabelWidget( {
+			label: 'Information',
+            classes: [ 'todo-info' ]
+        } );
+
+	// ... code ...
+
+	// Append the app widgets
+	$( '.wrapper' ).append(
+		input.$element,
+		list.$element,
+		info.$element
+	);
+} );
+</pre>
+
+Once again, we're adding a widget, and appending its $element to the DOM. Now we can use it to display the information stored in our widget. The items all live inside an <code>OO.ui.SelectWidget</code> which emits a 'choose' event when an element is clicked or chosen, with the reference to the chosen item as the parameter. We'll attach a listener to this event.
+
+<pre class="lang:js decode:true " >
+$( document ).ready( function () {
+	// ... code ...
+	list.on( 'choose', function ( item ) {
+		info.setLabel( item.getData() );
+	} );
+	// ... code ...	
+} );
+</pre>
+
+Now we have a very simple way of presenting the data stored in our item. This is a good start, but it doesn't yet seem to be all that helpful, because the data stored in each of our items is the same as its label, and doesn't quite give us any useful information. Let's change that now.
+
+<h1>Creating a custom item widget</h1>
+
+In order to extend the functionality of the <code>OO.ui.OptionWidget</code> so we can store more information, we need to create our own object and extend this class.
+
+Create a new file in your <code>assets/</code> directory, called <code>assets/ToDoItemWidget.js</code>. In it, we are creating our new object:
+
+<pre class="lang:js decode:true " >
+var ToDoItemWidget = function ( config ) {
+	// Configuration object is optional
+	config = config || {};
+
+	// Call parent constructor
+	ToDoItemWidget.parent.call( this, config );
+};
+// Inheritance
+OO.inheritClass( ToDoItemWidget, OO.ui.OptionWidget );
+</pre>
+
+Our new function extends <code>OO.ui.OptionWidget</code>, by declaring <code>OO.inheritClass( ToDoItemWidget, OO.ui.OptionWidget );</code> and by calling the parent constructor in the new class' constructor. 
+
+Before we start actually extending this object, let's make sure we can use it in our code. Let's reopen <code>index.html</code> again.
+
+First, add the file:
+<pre class="lang:default decode:true " >
+<script src="assets/ToDoItemWidget.js"></script>
+</pre>
+
+Second, change the code to use the new <code>ToDoItemWidget</code> class:
+<pre class="lang:js decode:true ">
+$( document ).ready( function () {
+	// ... code ...
+
+	// Respond to 'enter' keypress
+	input.on( 'enter', function () {
+		// ... code ...
+
+		// Add the item
+		list.addItems( [
+			new ToDoItemWidget( {
+				data: input.getValue(),
+				label: input.getValue()
+			} )
+		] );
+	} );
+
+	// ... code ...
+} );
+</pre>
+
+You can try out your app again, but nothing should be different just yet. We can now start extending our new object to add the functionality we want to have.
+
+<h2>Adding functionality</h2>
+
+Let's add a property that stores the timestamp of our todo item.
+
+<pre class="lang:js decode:true ">
+var ToDoItemWidget = function ( config ) {
+	config = config || {};
+
+	// Call parent constructor
+	ToDoItemWidget.parent.call( this, config );
+
+	this.timestamp = config.timestamp;
+};
+
+OO.inheritClass( ToDoItemWidget, OO.ui.OptionWidget );
+
+ToDoItemWidget.prototype.getTimestamp = function () {
+	return this.timestamp;
+};
+</pre>
+
+Now we can set this when we instantiate the object in our initialization script, and change the info label to display this new property.
+
+<pre class="lang:js decode:true ">
+$( document ).ready( function () {
+	// ... code ...
+
+	input.on( 'enter', function () {
+		// ... code ...
+
+		// Add the item
+		list.addItems( [
+			new ToDoItemWidget( {
+				data: input.getValue(),
+				label: input.getValue(),
+				timestamp: Date.now()
+			} )
+		] );
+	} );
+
+	// ... code ...
+
+	list.on( 'choose', function ( item ) {
+		info.setLabel( item.getData() + ' (' + item.getTimestamp() + ')' );
+	} );
+
+	// ... code ...
+} );
+</pre>
+
+Okay, that works, but since Date.now() is in unix timestamp, it looks weird. Let's make a better method to display it.
+
+In <code>ToDoItemWidget.js</code>:
+<pre class="lang:js decode:true ">
+ToDoItemWidget.prototype.getPrettyTimestamp = function () {
+	var date = new Date( this.timestamp ),
+		monthNames = [
+			'Jan',
+			'Feb',
+			'Mar',
+			'Apr',
+			'May',
+			'Jun',
+			'Jul',
+			'Aug',
+			'Sep',
+			'Oct',
+			'Nov',
+			'Dec'
+		];
+
+	return [
+		date.getDate(),
+		monthNames[ date.getMonth() ],
+		date.getFullYear(),
+		date.getHours() + ':' + date.getMinutes()
+	].join( ' ' );
+};
+</pre>
+
+In <code>index.html</code>:
+<pre class="lang:js decode:true ">
+$( document ).ready( function () {
+	// ... code ...
+
+	list.on( 'choose', function ( item ) {
+		info.setLabel( item.getData() + ' (' + item.getTimestamp() + ')' );
+	} );
+
+	// ... code ...
+} );
+</pre>
+
+And now it looks much better.
+
+But we're not done. We've already extended the items, so let's add some real functionality in there.
+
+<h1>Adding a 'delete' button to items</h1>
+
+Another of OOjs-UI's concepts is componentization - the ability to create bigger widgets from smaller ones. This can be pretty powerful and allow for advanced functionality.
+
+We're going to start small. Let's add a 'delete' button to our list of items. You can read about what <code>OO.ui.ButtonWidget</code> expects in its configuration options in <a href="https://doc.wikimedia.org/oojs-ui/master/js/#!/api/OO.ui.ButtonWidget">the official documentation</a>.
+
+In our <code>ToDoItemWidget.js</code> we'll add a button:
+<pre class="lang:js decode:true ">
+var ToDoItemWidget = function ( config ) {
+	// ... code ...
+
+	this.deleteButton = new OO.ui.ButtonWidget( {
+		label: 'Delete'
+	} );
+
+	this.$element.append( this.deleteButton.$element );
+};
+</pre>
+
+Just like any other widget in OOjs-UI, <code>OO.ui.ButtonWidget</code> has the $element property that contains its jQuery object. We're attaching that to our own widget.
+
+If you look at your app now, though, you'll see that the button appears under the label. That's because we need to add styles. Since we're building our own widget, let's do things properly and add a standalone style for it that we can then add and tweak in our CSS rules.
+
+<pre class="lang:js decode:true ">
+var ToDoItemWidget = function ( config ) {
+	// ... code ...
+
+	this.deleteButton = new OO.ui.ButtonWidget( {
+		label: 'Delete'
+	} );
+
+	this.$element
+		.addClass( 'todo-itemWidget' )
+		.append( this.deleteButton.$element );
+};
+</pre>
+
+And the CSS rules:
+<pre class="lang:css decode:true ">
+.todo-itemWidget {
+	display: table-row;
+}
+
+.todo-itemWidget.oo-ui-optionWidget.oo-ui-labelElement > .oo-ui-labelElement-label {
+	display: table-cell;
+	width: 100%;
+	padding: 0.5em;
+}
+
+.todo-itemWidget .oo-ui-buttonWidget {
+	display: table-cell;
+}
+</pre>
+
+There, that looks better. Now, let's add functionality to this button.
+
+<h1>Aggregating events</h1>
+One of the best things about using a <code>OO.ui.SelectWidget</code> for our list, is that it uses the <code>OO.ui.mixin.GroupElement</code> that allows for really cool operations on a group of items.
+
+One of those operations is an aggregation of events. 
+
+In effect, we can have each of our items emit a certain event, and have our list aggregate all of those events and respond whenever either of its item has emitted it. This means our logic can live "up" in the parent widget, consolidating our work with our items.
+
+This means, however, that we will need to extend our list object. We are going to do exactly what we did for our items (by creating the ToDoItemWidget class) but with a new ToDoListWidget class that extends OO.ui.SelectWidget.
+
+<h2>Creating a ToDoListWidget</h2>
+
+The new file <code>ToDoListWidget.js</code>:
+<pre class="lang:js decode:true ">
+var ToDoListWidget = function ToDoListWidget( config ) {
+	config = config || {};
+
+	// Call parent constructor
+	ToDoListWidget.parent.call( this, config );
+};
+
+OO.inheritClass( ToDoListWidget, OO.ui.SelectWidget );
+</pre>
+
+Attach it to <code>index.html</code> and change the initialization code:
+<pre class="lang:js decode:true ">
+		<!-- ... -->
+		<!-- ToDo app -->
+		<link rel="stylesheet" href="todo.css">
+		<script src="assets/ToDoItemWidget.js"></script>
+		<script src="assets/ToDoListWidget.js"></script>
+
+		<!-- initialization -->
+		<script type="text/javascript">
+			$( document ).ready( function () {
+				// ... code ...
+					list = new ToDoListWidget( {
+                        classes: [ 'todo-list' ]
+                    } ),
+				// ... code ...
+			} );
+		</script>
+		<!-- ... -->
+</pre>
+
+<h3>Responding to aggregation of events</h3>
+
+Now that we have our <code>ToDoListWidget</code> we can aggregate its item events.
+
+So how is it actually done? First, let's have our button emit a "delete" event for our item:
+
+<pre class="lang:js decode:true ">
+var ToDoItemWidget = function ( config ) {
+	// ... code ...
+
+	this.deleteButton.connect( this, { click: 'onDeleteButtonClick' } );
+
+	// ... code ...
+};
+
+// ... code ...
+
+ToDoItemWidget.prototype.onDeleteButtonClick = function () {
+	this.emit( 'delete' );
+};
+</pre>
+
+Notice that this time, we didn't use <code>.on( ... )</code> but rather <code>.connect( this, { ... } )</code> - this is because we are now connecting the object we are currently "in" the context of, to the event. I've used "on" before when we were in the general initialization script, and had no context to give the event emitter.
+
+The string 'onDeleteButtonClick' refers to the method of the same name. When 'click' is emitted from that button, that method is invoked. It, in turn, will emit "delete" event.
+
+Now, we need to make sure that the list is listening to this event from all of its sub-items. We will first aggregate the event and then listen to the aggregated event and respond to it:
+
+<pre class="lang:js decode:true ">
+var ToDoListWidget = function ToDoListWidget( config ) {
+	// ... code ...
+
+	this.aggregate( {
+		delete: 'itemDelete'
+	} );
+
+	this.connect( this, { itemDelete: 'onItemDelete' } );
+};
+
+OO.inheritClass( ToDoListWidget, OO.ui.SelectWidget );
+
+ToDoListWidget.prototype.onItemDelete = function ( itemWidget ) {
+	this.removeItems( [ itemWidget ] );
+};
+</pre>
+
+We've used <code>this.aggregate()</code> to tell the group which events to listen to in its items, and we've used <code>this.connect( this, { ... } );</code> to connect our own object to the event we aggregated.
+
+Then, the responding method (<code>onItemDelete</code>) removes the item from the list.
+
+You can now add and remove items from your ToDo app, yay!
+
+Now that the app has basic operations, we can call this part of the tutorial over. I hope that you got a good taste as to what OOjs-UI is like, and the potential it holds in quickly - but efficiently - developing JavaScript apps.
+
+If you have any questions, concerns or corrections, please let me know in the comments. The entire code for this demo - and the text of the tutorials - is available in a GitHub repo, and pull requests are absolutely welcome.
+
+In the next tutorials I will focus on the more advancaed features of OOjs-UI like dialogs, advanced button-sets and working with a view-model to help us manage the operations in the background.
+
+Until next time, JavaScript responsibly.

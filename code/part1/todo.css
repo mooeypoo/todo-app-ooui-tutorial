@@ -1,0 +1,17 @@
+.wrapper {
+	width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.todo-error input {
+	background-color: #FF9696;
+}
+
+.todo-list {
+	border: 1px solid #333333;
+}
+
+.todo-list .oo-ui-optionWidget:not(:last-child) {
+	border-bottom: 1px solid #666666;
+}

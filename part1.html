@@ -1,0 +1,260 @@
+In this post we'll walk through creating a simple ToDo JavaScript app with the OOjs-UI library, which was created by the Wikimedia Foundation. OOjs-UI has a lot of power under the hood and a lot of potential for super-powerful JavaScript applications in your browser --&nbsp;so we will start small and grow as we go, hopefully giving you a taste of the library and its concepts.
+
+OOjs-UI itself is licensed under <a href="https://opensource.org/licenses/MIT">MIT</a>. The code we will create is licensed under <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GPLv2</a>.
+
+<h1>
+	Setup and prep
+</h1>
+
+First, we&#39;ll have to get the libraries we will use: jQuery, OOjs and OOjs-UI.
+
+In your project directory, create a <code>assets/lib/</code> folder that will hold our necessary libraries:
+<ol>
+	<li>
+		You can <a href="https://jquery.com/download/">download jQuery from the official website</a>. We&#39;ll be using version 1.12.1
+	</li>
+	<li>
+		OOjs library is available&nbsp;. We will use the jQuery version.
+	</li>
+	<li>
+		OOjs-UI is available here. This library is fairly complex and is divided into modules and themes, so the&nbsp;dist/ folder is pretty big. We actually don&#39;t need most of it. Copy the following files into your <code>assets/lib/</code> folder
+		<ul>
+			<li>
+				dist/oojs-ui.min.js
+			</li>
+			<li>
+				dist/oojs-ui-apex.min.js
+			</li>
+			<li>
+				dist/oojs-ui-apex.css
+			</li>
+			<li>
+				dist/themes/apex
+			</li>
+		</ul>
+	</li>
+</ol>
+
+Create an empty file <code>todo.css</code> - we will use this file later for all of our custom CSS styling.
+
+Next, we will attach those files to our html page. This is how our basic page should look like now:
+<pre class="lang:default decode:true">
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ToDo OOjs-UI</title>
+		<meta name="description" content="A demo ToDo app made with OOjs-UI">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- jQuery -->
+		<script src="assets/lib/jquery-1.12.1.min.js"></script>
+		<!-- OOjs -->
+		<script src="assets/lib/oojs.jquery.js"></script>
+		<!-- OOjs-UI -->
+		<script src="assets/lib/ooui/oojs-ui.min.js"></script>
+		<!-- OOjs-UI theme -->
+		<script src="assets/lib/ooui/oojs-ui-apex.min.js"></script>
+		<link rel="stylesheet" href="assets/lib/ooui/oojs-ui-apex.css">
+
+		<!-- ToDo app custom -->
+		<link rel="stylesheet" href="todo.css">
+
+		<!-- initialization -->
+		<script type="text/javascript">
+			$( document ).ready( function () {
+				// Our code goes here
+			} );
+		</script>
+	</head>
+	<body>
+		<h1>Demo ToDo app with OOjs-UI</h1>
+		<div class="wrapper"></div>
+	</body>
+</html>
+</pre>
+
+We will use the <code>wrapper</code> div element to inject our application into, and we'll write our code -- at least in this stage -- in the <code>$( document ).ready()</code> script block.
+
+<h1>Building the base</h1>
+
+So now that we have our basic page, we need to start writing code. Our ToDo app should have two main pieces to start with: An input to add a new item, and a list displaying all items that have been added. Since a ToDo list allows us to show a list of items that can be selected, the best starting point for this is an <code>OO.ui.SelectWidget</code> -- so that's what we'll start with. You can see a demo of all OOjs-UI widgets <a href="https://doc.wikimedia.org/oojs-ui/master/demos/">in the official demo page</a>.
+
+<pre class="lang:default decode:true">
+$( document ).ready( function () {
+	var input = new OO.ui.TextInputWiget(),
+		list = new OO.ui.SelectWidget();
+
+	// Append to the wrapper
+	$( '.wrapper' ).append(
+		input.$element,
+		list.$element
+	);
+} );
+</pre>
+
+Let's break this up and see what we did there.
+
+One of OOjs-UI's principles is to separate the data from the UI, so each one of the widgets we're creating is first and foremost an object that is separate from the DOM. That object contains the DOM element itself in the $element property, which we use to attach to the document, but the behavior itself (as we will soon see) is done through the general OOjs-UI object.
+
+So in short, we created two widgets -- a text input and a select widget -- and then attached their <code>$element</code> to the document. If you load your page, it should have the title and an input. The list is invisible because we don't have a way to add elements to it yet -- so let's do that now.
+
+<h1>Adding items to the list</h1>
+
+We have our input, and we have the list, and now we need to connect them. <code>OO.ui.TextInputWidget</code> emits several events - one of them is simply "enter" when the enter key is pressed (You can see all events <a href="https://doc.wikimedia.org/oojs-ui/master/js/#!/api/OO.ui.TextInputWidget">in the documentation</a>). Let's make our input add an item to the list when we hit the "enter" key.
+
+Since the list is an <code>OO.ui.SelectWidget</code> we should add into it an OO.ui.OptionWidget.
+
+<pre class="lang:default decode:true">
+// Respond to 'enter' keypress
+text.on( 'enter', function () {
+	// Add the item
+	list.addItems( [
+		new OO.ui.OptionWidget( {
+			data: text.getValue(),
+			label: text.getValue()
+		} )
+	] );
+} );
+</pre>
+
+That would add an item to the list. But what if we are trying to add an item that already exists? Let's add a condition that checks whether the item exists first before it is added:
+<pre class="lang:default decode:true">
+// Respond to 'enter' keypress
+input.on( 'enter', function () {
+	// Check for duplicates
+	if ( list.getItemFromData( input.getValue() ) ) {
+		input.$element.addClass( 'todo-error' );
+		return;
+	}
+	input.$element.removeClass( 'todo-error' );
+
+	// Add the item
+	list.addItems( [
+		new OO.ui.OptionWidget( {
+			data: input.getValue(),
+			label: input.getValue()
+		} )
+	] );
+} );
+</pre>
+
+We now are able to only add unique items to this list. When an item that already exists is added, we attach the class "todo-error" to the input. For it to actually show something, we need to define it in our CSS file. Add this to your <code>todo.css</code> file:
+
+<pre class="lang:css decode:true">
+.todo-error input {
+	background-color: #FF9696;
+}
+</pre>
+
+Now let's try our new app:
+
+<img src="http://moriel.smarterthanthat.com/wp-content/uploads/2016/02/todoapp-step1-a-400x120.png" alt="Adding items" width="400" height="120" class="aligncenter size-medium wp-image-1683" />
+
+<img src="http://moriel.smarterthanthat.com/wp-content/uploads/2016/02/todoapp-step1-b-400x122.png" alt="Adding a duplicate" width="400" height="122" class="aligncenter size-medium wp-image-1684" />
+
+It works! Now, let's add a little bit of extra flair to the app.
+
+<h1>Custom styling</h1>
+
+Let's make sure that our list and our input are styled a bit better, and add a placeholder to the input. Let's go back to the piece in our code where we created the widgets, and add configuration to both:
+<pre class="lang:default decode:true">
+$( document ).ready( function () {
+	var input = new OO.ui.TextInputWiget( {
+			placeholder: 'ToDo item',
+			classes: [ 'todo-input' ]
+		} ),
+		list = new OO.ui.SelectWidget( {
+			classes: [ 'todo-list' ]
+		} );
+
+	// code continues...
+} );
+</pre>
+
+The above configuration adds css classes to the widgets and a placeholder text to the text widget. We can now go edit our <code>todo.css</code> stylesheet, and add styles. Notice that we can also style the underlying objects, which (for now) we will do by calling their oo-ui-style class:
+<pre class="lang:css decode:true">
+.wrapper {
+	width: 800px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.todo-list {
+	border: 1px solid #333333;
+}
+
+.todo-list .oo-ui-optionWidget:not(:last-child) {
+	border-bottom: 1px solid #666666;
+}</pre>
+
+That's it. Now reload your app and look at your wonderful result. 
+
+<h1>The complete code</h1>
+
+We now have a basic ToDo app. Yay! Here's the full code of our <code>index.html</code>
+
+<pre class="lang:default decode:true " ><!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Demo ToDo app with OOjs-UI</title>
+		<meta name="description" content="A demo ToDo app made with OOjs-UI">
+		<!-- jQuery -->
+		<script src="assets/lib/jquery-1.12.1.min.js"></script>
+		<!-- OOjs -->
+		<script src="assets/lib/oojs.jquery.js"></script>
+		<!-- OOjs-UI -->
+		<script src="assets/lib/ooui/oojs-ui.min.js"></script>
+		<!-- OOjs-UI theme -->
+		<script src="assets/lib/ooui/oojs-ui-apex.min.js"></script>
+		<link rel="stylesheet" href="assets/lib/ooui/oojs-ui-apex.css">
+
+		<!-- ToDo app -->
+		<link rel="stylesheet" href="todo.css">
+
+		<!-- initialization -->
+		<script type="text/javascript">
+			$( document ).ready( function () {
+				var input = new OO.ui.TextInputWidget( {
+						placeholder: 'ToDo item',
+                        classes: [ 'todo-input' ]
+					} ),
+					list = new OO.ui.SelectWidget( {
+                        classes: [ 'todo-list' ]
+                    } );
+
+				// Respond to 'enter' keypress
+				input.on( 'enter', function () {
+					// Check for duplicates
+					if ( list.getItemFromData( input.getValue() ) ) {
+						input.$element.addClass( 'todo-error' );
+						return;
+					}
+					input.$element.removeClass( 'todo-error' );
+
+					// Add the item
+					list.addItems( [
+						new OO.ui.OptionWidget( {
+							data: input.getValue(),
+							label: input.getValue()
+						} )
+					] );
+				} );
+
+				// Append the app widgets
+				$( '.wrapper' ).append(
+					input.$element,
+					list.$element
+				);
+			} );
+		</script>
+	</head>
+	<body>
+		<h1>Demo ToDo app with OOjs-UI</h1>
+		<div class="wrapper"></div>
+	</body>
+</html>
+</pre> 
+
+In the next part, we'll see how we can add more functionality, like storing and reading specific data on each object.

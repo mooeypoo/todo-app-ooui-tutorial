@@ -1,0 +1,69 @@
+<!--
+    A demo ToDo app made with OOjs-UI
+    Tutorial by Moriel Schottlender
+    http://moriel.smarterthanthat.com
+    License: GPLv2
+-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ToDo OOjs-UI - Part 1</title>
+		<meta name="description" content="A demo ToDo app made with OOjs-UI">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- jQuery -->
+		<script src="assets/lib/jquery-1.12.1.min.js"></script>
+		<!-- OOjs -->
+		<script src="assets/lib/oojs.jquery.js"></script>
+		<!-- OOjs-UI -->
+		<script src="assets/lib/ooui/oojs-ui.min.js"></script>
+		<!-- OOjs-UI theme -->
+		<script src="assets/lib/ooui/oojs-ui-apex.min.js"></script>
+		<link rel="stylesheet" href="assets/lib/ooui/oojs-ui-apex.css">
+
+		<!-- ToDo app -->
+		<link rel="stylesheet" href="todo.css">
+
+		<!-- initialization -->
+		<script type="text/javascript">
+			$( document ).ready( function () {
+				var input = new OO.ui.TextInputWidget( {
+						placeholder: 'ToDo item',
+                        classes: [ 'todo-input' ]
+					} ),
+					list = new OO.ui.SelectWidget( {
+                        classes: [ 'todo-list' ]
+                    } );
+
+				// Respond to 'enter' keypress
+				input.on( 'enter', function () {
+					// Check for duplicates
+					if ( list.getItemFromData( input.getValue() ) ) {
+						input.$element.addClass( 'todo-error' );
+						return;
+					}
+					input.$element.removeClass( 'todo-error' );
+
+					// Add the item
+					list.addItems( [
+						new OO.ui.OptionWidget( {
+							data: input.getValue(),
+							label: input.getValue()
+						} )
+					] );
+				} );
+
+				// Append the app widgets
+				$( '.wrapper' ).append(
+					input.$element,
+					list.$element
+				);
+			} );
+		</script>
+	</head>
+	<body>
+		<h1>Demo ToDo app with OOjs-UI - Part 1</h1>
+		<div class="wrapper"></div>
+	</body>
+</html>
