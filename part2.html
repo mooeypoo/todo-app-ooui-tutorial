@@ -343,6 +343,56 @@ Then, the responding method (<code>onItemDelete</code>) removes the item from th
 
 You can now add and remove items from your ToDo app, yay!
 
+<h1>The complete code</h1>
+
+<pre class="lang:js decode:true " ><!doctype html>
+$( document ).ready( function () {
+	var input = new OO.ui.TextInputWidget( {
+			placeholder: 'ToDo item',
+			classes: [ 'todo-input' ]
+		} ),
+		list = new ToDoListWidget( {
+			classes: [ 'todo-list' ]
+		} ),
+		info = new OO.ui.LabelWidget( {
+			label: 'Information',
+			classes: [ 'todo-info' ]
+		} );
+
+	// Respond to 'enter' keypress
+	input.on( 'enter', function () {
+		// Check for duplicates
+		if ( list.getItemFromData( input.getValue() ) ) {
+			input.$element.addClass( 'todo-error' );
+			return;
+		}
+		input.$element.removeClass( 'todo-error' );
+
+		// Add the item
+		list.addItems( [
+			new ToDoItemWidget( {
+				data: input.getValue(),
+				label: input.getValue(),
+				timestamp: Date.now()
+			} )
+		] );
+	} );
+
+	list.on( 'choose', function ( item ) {
+		info.setLabel( item.getData() + ' (' + item.getPrettyTimestamp() + ')' );
+	} );
+
+	// Append the app widgets
+	$( '.wrapper' ).append(
+		input.$element,
+		list.$element,
+		info.$element
+	);
+} );
+</pre>
+
+<h1>Future development and tutorials</h1>
+
 Now that the app has basic operations, we can call this part of the tutorial over. I hope that you got a good taste as to what OOjs-UI is like, and the potential it holds in quickly - but efficiently - developing JavaScript apps.
 
 If you have any questions, concerns or corrections, please let me know in the comments. The entire code for this demo - and the text of the tutorials - is available in a GitHub repo, and pull requests are absolutely welcome.
