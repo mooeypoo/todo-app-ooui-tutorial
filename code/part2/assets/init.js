@@ -1,5 +1,5 @@
 /**
- * A demo ToDo app made with OOjs-UI
+ * A demo ToDo app made with OOjs UI
  * Tutorial by Moriel Schottlender
  * http://moriel.smarterthanthat.com
  * License: GPLv2

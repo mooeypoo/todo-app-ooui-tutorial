@@ -1,4 +1,4 @@
-This is the repository for the OOjs-UI tutorial creating a ToDo app.
+This is the repository for the OOjs UI tutorial creating a ToDo app.
 
 **This tutorial is not yet published. It is here for edits and review. Please feel free to comment in issues or (even better) send pull requests. If you're waiting to read it properly, I'm hoping to publish soon in the links below**
 
