@@ -1,12 +1,12 @@
-In this post we'll walk through creating a simple ToDo JavaScript app with the OOjs-UI library, which was created by the Wikimedia Foundation. OOjs-UI has a lot of power under the hood and a lot of potential for super-powerful JavaScript applications in your browser -- so we will start small and grow as we go, hopefully giving you a taste of the library and its concepts.
+In this post we'll walk through creating a simple ToDo JavaScript app with the OOjs UI library, which was created by the Wikimedia Foundation. OOjs UI has a lot of power under the hood and a lot of potential for super-powerful JavaScript applications in your browser -- so we will start small and grow as we go, hopefully giving you a taste of the library and its concepts.
 
-OOjs-UI itself is licensed under <a href="https://opensource.org/licenses/MIT">MIT</a>. The code we will create is licensed under <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GPLv2</a>.
+OOjs UI itself is licensed under <a href="https://opensource.org/licenses/MIT">MIT</a>. The code we will create is licensed under <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GPLv2</a>.
 
 <h1>
 	Setup and prep
 </h1>
 
-First, we'll have to get the libraries we will use: jQuery, OOjs and OOjs-UI.
+First, we'll have to get the libraries we will use: jQuery, OOjs and OOjs UI.
 
 <h2>Libraries</h2>
 In your project directory, create a <code>assets/lib/</code> folder that will hold our necessary libraries:
@@ -15,26 +15,26 @@ In your project directory, create a <code>assets/lib/</code> folder that will ho
 		You can <a href="https://jquery.com/download/">download jQuery from the official website</a>. We'll be using version 1.12.1
 	</li>
 	<li>
-		OOjs and OOjs-UI are available from the official repositories, and there are two ways to download the files we need (see next section).
+		OOjs and OOjs UI are available from the official repositories, and there are two ways to download the files we need (see next section).
 	</li>
 </ol>
 
 There are two main ways to get the files for both of these libraries, depending on how comfortable you are with development environment and working with git.
 
-<h3>Getting OOjs and OOjs-UI from the git repo</h3>
-If you're comfortable with git and gruntjs, this is the best way to work with OOjs and OOjs-UI library files, as those will give you the most updated files each time:
+<h3>Getting OOjs and OOjs UI from the git repo</h3>
+If you're comfortable with git and gruntjs, this is the best way to work with OOjs and OOjs UI library files, as those will give you the most updated files each time:
 <ul>
 	<li>Clone the repository
 	<ul>
-		<li>OOjs: https://github.com/wikimedia/oojs</li>
-		<li>OOjs-UI: https://github.com/wikimedia/oojs-ui</li>
+		<li>OOjs - git clone git@github.com:wikimedia/oojs.git</li>
+		<li>OOjs UI - git clone git@github.com:wikimedia/oojs-ui.git</li>
 	</ul>
 	</li>
 	<li>Run <code>npm install</code> in each of the repositories to install the necessary packages.
 	<li>Run <code>grunt build</code> in each of the repositories. This will populate their <code>dist/</code> folders, which is where you get the library files to use.
 	<ul>
 		<li>For OOjs, we will use the <code>oojs.jquery.js</code> file (place that one in your <code>assets/lib</code> folder)</li>
-		<li>OOjs-UI is a much more robust library with the option of separating modules. We don't need most of the files in the <code>dist/</code> folder, all we need are these files to be copied files into your <code>assets/lib/ooui/</code> folder:
+		<li>OOjs UI is a robust library with the option of separating modules. We don't need most of the files in the <code>dist/</code> folder, all we need are these files to be copied files into your <code>assets/lib/ooui/</code> folder:
 		<ul>
 			<li>
 				dist/oojs-ui.min.js
@@ -51,12 +51,12 @@ If you're comfortable with git and gruntjs, this is the best way to work with OO
 		</ul>
 	</li>
 </ol>
-<h3>Getting OOjs and OOjs-UI from the demo zip</h3>
+<h3>Getting OOjs and OOjs UI from the demo zip</h3>
 If you don't want to mess with git and grunt, you can download the demo files and extract the necessary library files directly from it, trusting that I did the job for you.
 
 <a href="http://moriel.smarterthanthat.com/wp-content/uploads/2016/02/todo-tutorial-ooui-libfiles.zip">Download the zip file here.</a>
 
-The only caveat here is that the demo zip will likely not be updated as often as OOjs-UI is updated, so be advised that you may be using an older library version.
+The only caveat here is that the demo zip will likely not be updated as often as OOjs UI is updated, so be advised that you may be using an older library version.
 
 <h2>Project files</h2>
 We will start with two files for our project - the JavaScript initialization file and the CSS file.
@@ -75,17 +75,17 @@ Next, we will attach those files to our html page. This is how our basic page sh
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>ToDo OOjs-UI</title>
-		<meta name="description" content="A demo ToDo app made with OOjs-UI">
+		<title>ToDo OOjs UI</title>
+		<meta name="description" content="A demo ToDo app made with OOjs UI">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
 		<!-- jQuery -->
 		<script src="assets/lib/jquery-1.12.1.min.js"></script>
 		<!-- OOjs -->
 		<script src="assets/lib/oojs.jquery.js"></script>
-		<!-- OOjs-UI -->
+		<!-- OOjs UI -->
 		<script src="assets/lib/ooui/oojs-ui.min.js"></script>
-		<!-- OOjs-UI theme -->
+		<!-- OOjs UI theme -->
 		<script src="assets/lib/ooui/oojs-ui-apex.min.js"></script>
 		<link rel="stylesheet" href="assets/lib/ooui/oojs-ui-apex.css">
 
@@ -94,7 +94,7 @@ Next, we will attach those files to our html page. This is how our basic page sh
 		<script src="assets/init.js"></script>
 	</head>
 	<body>
-		<h1>Demo ToDo app with OOjs-UI</h1>
+		<h1>Demo ToDo app with OOjs UI</h1>
 		<div class="wrapper"></div>
 	</body>
 </html>
@@ -104,7 +104,7 @@ We will use the <code>wrapper</code> div element to inject our application into.
 
 <h1>Building the base</h1>
 
-So now that we have our basic page, we need to start writing code. Our ToDo app should have two main pieces to start with: An input to add a new item, and a list displaying all items that have been added. Since a ToDo list allows us to show a list of items that can be selected, the best starting point for this is an <code>OO.ui.SelectWidget</code> -- so that's what we'll start with. You can see a demo of all OOjs-UI widgets <a href="https://doc.wikimedia.org/oojs-ui/master/demos/">in the official demo page</a>.
+So now that we have our basic page, we need to start writing code. Our ToDo app should have two main pieces to start with: An input to add a new item, and a list displaying all items that have been added. Since a ToDo list allows us to show a list of items that can be selected, the best starting point for this is an <code>OO.ui.SelectWidget</code> -- so that's what we'll start with. You can see a demo of all OOjs UI widgets <a href="https://doc.wikimedia.org/oojs-ui/master/demos/">in the official demo page</a>.
 
 <pre class="lang:default decode:true">
 $( document ).ready( function () {
@@ -121,7 +121,7 @@ $( document ).ready( function () {
 
 Let's break this up and see what we did there.
 
-One of OOjs-UI's principles is to separate the data from the UI, so each one of the widgets we're creating is first and foremost an object that is separate from the DOM. That object contains the DOM element itself in the $element property, which we use to attach to the document, but the behavior itself (as we will soon see) is done through the general OOjs-UI object.
+One of OOjs UI's principles is to separate the data from the UI, so each one of the widgets we're creating is first and foremost an object that is separate from the DOM. That object contains the DOM element itself in the $element property, which we use to attach to the document, but the behavior itself (as we will soon see) is done through the general OOjs UI object.
 
 So in short, we created two widgets -- a text input and a select widget -- and then attached their <code>$element</code> to the document. If you load your page, it should have the title and an input. The list is invisible because we don't have a way to add elements to it yet -- so let's do that now.
 
@@ -133,12 +133,12 @@ Since the list is an <code>OO.ui.SelectWidget</code> we should add into it an OO
 
 <pre class="lang:default decode:true">
 // Respond to 'enter' keypress
-text.on( 'enter', function () {
+input.on( 'enter', function () {
 	// Add the item
 	list.addItems( [
 		new OO.ui.OptionWidget( {
-			data: text.getValue(),
-			label: text.getValue()
+			data: input.getValue(),
+			label: input.getValue()
 		} )
 	] );
 } );
@@ -198,7 +198,7 @@ $( document ).ready( function () {
 } );
 </pre>
 
-The above configuration adds css classes to the widgets and a placeholder text to the text widget. We can now go edit our <code>todo.css</code> stylesheet, and add styles. Notice that we can also style the underlying objects, which (for now) we will do by calling their oo-ui-style class:
+The above configuration adds CSS classes to the widgets and a placeholder text to the text widget. We can now go edit our <code>todo.css</code> stylesheet, and add styles. Notice that we can also style the underlying objects, which (for now) we will do by calling their oo-ui-style class:
 <pre class="lang:css decode:true">
 .wrapper {
 	width: 800px;

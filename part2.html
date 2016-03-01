@@ -1,4 +1,4 @@
-In the previous part of this tutorial, we walked through how to make a very basic version of a ToDo app using Wikimedia's OOjs-UI library. Now it's time to add a way to store and display information from our items.
+In the previous part of this tutorial, we walked through how to make a very basic version of a ToDo app using Wikimedia's OOjs UI library. Now it's time to add a way to store and display information from our items.
 
 <h1>Displaying info</h1>
 
@@ -29,7 +29,7 @@ $( document ).ready( function () {
 } );
 </pre>
 
-Once again, we're adding a widget, and appending its $element to the DOM. Now we can use it to display the information stored in our widget. The items all live inside an <code>OO.ui.SelectWidget</code> which emits a 'choose' event when an element is clicked or chosen, with the reference to the chosen item as the parameter. We'll attach a listener to this event.
+Once again, we're adding a widget, and appending its $element to the DOM. Now we can use it to display the information stored in our widget. The ToDo items all live inside an <code>OO.ui.SelectWidget</code> which emits a 'choose' event when an element is clicked or chosen, with the reference to the chosen item as the parameter. We'll attach a listener to this event.
 
 <pre class="lang:js decode:true " >
 $( document ).ready( function () {
@@ -45,9 +45,9 @@ Now we have a very simple way of presenting the data stored in our item. This is
 
 <h1>Creating a custom item widget</h1>
 
-In order to extend the functionality of the <code>OO.ui.OptionWidget</code> so we can store more information, we need to create our own object and extend this class.
+In order to expand the functionality of the <code>OO.ui.OptionWidget</code> so we can store more information, we need to create our own class and extend OO.ui.OptionWidget.
 
-Create a new file in your <code>assets/</code> directory, called <code>assets/ToDoItemWidget.js</code>. In it, we are creating our new object:
+Create a new file in your <code>assets/</code> directory, called <code>assets/ToDoItemWidget.js</code>. In it, we are creating our new class:
 
 <pre class="lang:js decode:true " >
 var ToDoItemWidget = function ( config ) {
@@ -63,7 +63,7 @@ OO.inheritClass( ToDoItemWidget, OO.ui.OptionWidget );
 
 Our new function extends <code>OO.ui.OptionWidget</code>, by declaring <code>OO.inheritClass( ToDoItemWidget, OO.ui.OptionWidget );</code> and by calling the parent constructor in the new class' constructor. 
 
-Before we start actually extending this object, let's make sure we can use it in our code. Let's reopen <code>index.html</code> again.
+Before we start actually defining members of this class, let's make sure we can use it in our code. Let's reopen <code>index.html</code> again.
 
 First, add the file:
 <pre class="lang:default decode:true " >
@@ -92,7 +92,7 @@ $( document ).ready( function () {
 } );
 </pre>
 
-You can try out your app again, but nothing should be different just yet. We can now start extending our new object to add the functionality we want to have.
+You can try out your app again, but nothing should be different just yet. We can now start developing our new class to add the functionality we want to have.
 
 <h2>Adding functionality</h2>
 
@@ -144,7 +144,7 @@ $( document ).ready( function () {
 } );
 </pre>
 
-Okay, that works, but since Date.now() is in unix timestamp, it looks weird. Let's make a better method to display it.
+Okay, that works, but since Date.now() is a UNIX timestamp, it looks weird. Let's make a better method to display it.
 
 In <code>ToDoItemWidget.js</code>:
 <pre class="lang:js decode:true ">
@@ -189,11 +189,11 @@ $( document ).ready( function () {
 
 And now it looks much better.
 
-But we're not done. We've already extended the items, so let's add some real functionality in there.
+But we're not done. We've already enhanced the items, so let's add some real functionality in there.
 
 <h1>Adding a 'delete' button to items</h1>
 
-Another of OOjs-UI's concepts is componentization - the ability to create bigger widgets from smaller ones. This can be pretty powerful and allow for advanced functionality.
+Another of OOjs UI's concepts is componentization - the ability to create bigger widgets from smaller ones. This can be pretty powerful and allow for advanced functionality.
 
 We're going to start small. Let's add a 'delete' button to our list of items. You can read about what <code>OO.ui.ButtonWidget</code> expects in its configuration options in <a href="https://doc.wikimedia.org/oojs-ui/master/js/#!/api/OO.ui.ButtonWidget">the official documentation</a>.
 
@@ -210,7 +210,7 @@ var ToDoItemWidget = function ( config ) {
 };
 </pre>
 
-Just like any other widget in OOjs-UI, <code>OO.ui.ButtonWidget</code> has the $element property that contains its jQuery object. We're attaching that to our own widget.
+Just like any other widget in OOjs UI, <code>OO.ui.ButtonWidget</code> has the $element property that contains its jQuery object. We're attaching that to our own widget.
 
 If you look at your app now, though, you'll see that the button appears under the label. That's because we need to add styles. Since we're building our own widget, let's do things properly and add a standalone style for it that we can then add and tweak in our CSS rules.
 
@@ -252,9 +252,9 @@ One of the best things about using a <code>OO.ui.SelectWidget</code> for our lis
 
 One of those operations is an aggregation of events. 
 
-In effect, we can have each of our items emit a certain event, and have our list aggregate all of those events and respond whenever either of its item has emitted it. This means our logic can live "up" in the parent widget, consolidating our work with our items.
+In effect, we can have each of our items emit a certain event, and have our list aggregate all of those events and respond whenever any of its items have emitted it. This means our logic can live "up" in the parent widget, consolidating our work with our items.
 
-This means, however, that we will need to extend our list object. We are going to do exactly what we did for our items (by creating the ToDoItemWidget class) but with a new ToDoListWidget class that extends OO.ui.SelectWidget.
+This means, however, that we will need to enhance our list object. We are going to do exactly what we did for our items (by creating the ToDoItemWidget class) but with a new ToDoListWidget class that extends OO.ui.SelectWidget.
 
 <h2>Creating a ToDoListWidget</h2>
 
@@ -393,10 +393,10 @@ $( document ).ready( function () {
 
 <h1>Future development and tutorials</h1>
 
-Now that the app has basic operations, we can call this part of the tutorial over. I hope that you got a good taste as to what OOjs-UI is like, and the potential it holds in quickly - but efficiently - developing JavaScript apps.
+Now that the app has basic operations, we can call this part of the tutorial over. I hope that you got a good taste as to what OOjs UI is like, and the potential it holds in quickly - but efficiently - developing JavaScript apps.
 
 If you have any questions, concerns or corrections, please let me know in the comments. The entire code for this demo - and the text of the tutorials - is available in a GitHub repo, and pull requests are absolutely welcome.
 
-In the next tutorials I will focus on the more advancaed features of OOjs-UI like dialogs, advanced button-sets and working with a view-model to help us manage the operations in the background.
+In the next tutorials I will focus on the more advanced features of OOjs UI, like dialogs, advanced button-sets and working with a view-model to help us manage the operations in the background.
 
 Until next time, JavaScript responsibly.
