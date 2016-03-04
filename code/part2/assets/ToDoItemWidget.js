@@ -4,7 +4,7 @@ var ToDoItemWidget = function ToDoItemWidget( config ) {
 	// Call parent constructor
 	ToDoItemWidget.parent.call( this, config );
 
-	this.timestamp = config.timestamp;
+	this.creationTime = config.creationTime;
 
 	this.deleteButton = new OO.ui.ButtonWidget( {
 		label: 'Delete'
@@ -23,12 +23,12 @@ ToDoItemWidget.prototype.onDeleteButtonClick = function () {
 	this.emit( 'delete' );
 };
 
-ToDoItemWidget.prototype.getTimestamp = function () {
-	return this.timestamp;
+ToDoItemWidget.prototype.getCreationTime = function () {
+	return this.creationTime;
 };
 
-ToDoItemWidget.prototype.getPrettyTimestamp = function () {
-	var date = new Date( this.timestamp ),
+ToDoItemWidget.prototype.getPrettyCreationTime= function () {
+	var date = new Date( this.creationTime ),
 		monthNames = [
 			'Jan',
 			'Feb',

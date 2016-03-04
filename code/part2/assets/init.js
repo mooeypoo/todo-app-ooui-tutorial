@@ -31,7 +31,7 @@ $( document ).ready( function () {
 			new ToDoItemWidget( {
 				data: input.getValue(),
 				label: input.getValue(),
-				timestamp: Date.now()
+				creationTime: Date.now()
 			} )
 		] );
 	} );

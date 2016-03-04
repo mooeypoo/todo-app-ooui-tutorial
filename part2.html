@@ -96,7 +96,7 @@ You can try out your app again, but nothing should be different just yet. We can
 
 <h2>Adding functionality</h2>
 
-Let's add a property that stores the timestamp of our todo item.
+Let's add a property that stores the creation time of our todo item.
 
 <pre class="lang:js decode:true ">
 var ToDoItemWidget = function ( config ) {
@@ -105,13 +105,13 @@ var ToDoItemWidget = function ( config ) {
 	// Call parent constructor
 	ToDoItemWidget.parent.call( this, config );
 
-	this.timestamp = config.timestamp;
+	this.creationTime = config.creationTime;
 };
 
 OO.inheritClass( ToDoItemWidget, OO.ui.OptionWidget );
 
-ToDoItemWidget.prototype.getTimestamp = function () {
-	return this.timestamp;
+ToDoItemWidget.prototype.getCreationTime = function () {
+	return this.creationTime;
 };
 </pre>
 
@@ -129,7 +129,7 @@ $( document ).ready( function () {
 			new ToDoItemWidget( {
 				data: input.getValue(),
 				label: input.getValue(),
-				timestamp: Date.now()
+				creationTime: Date.now()
 			} )
 		] );
 	} );
@@ -137,7 +137,7 @@ $( document ).ready( function () {
 	// ... code ...
 
 	list.on( 'choose', function ( item ) {
-		info.setLabel( item.getData() + ' (' + item.getTimestamp() + ')' );
+		info.setLabel( item.getData() + ' (' + item.getCreationTime() + ')' );
 	} );
 
 	// ... code ...
@@ -148,8 +148,8 @@ Okay, that works, but since Date.now() is a UNIX timestamp, it looks weird. Let'
 
 In <code>ToDoItemWidget.js</code>:
 <pre class="lang:js decode:true ">
-ToDoItemWidget.prototype.getPrettyTimestamp = function () {
-	var date = new Date( this.timestamp ),
+ToDoItemWidget.prototype.getPrettyCreationTime = function () {
+	var date = new Date( this.creationTime ),
 		monthNames = [
 			'Jan',
 			'Feb',
@@ -180,7 +180,7 @@ $( document ).ready( function () {
 	// ... code ...
 
 	list.on( 'choose', function ( item ) {
-		info.setLabel( item.getData() + ' (' + item.getTimestamp() + ')' );
+		info.setLabel( item.getData() + ' (' + item.getCreationTime() + ')' );
 	} );
 
 	// ... code ...
@@ -373,13 +373,13 @@ $( document ).ready( function () {
 			new ToDoItemWidget( {
 				data: input.getValue(),
 				label: input.getValue(),
-				timestamp: Date.now()
+				creationTime: Date.now()
 			} )
 		] );
 	} );
 
 	list.on( 'choose', function ( item ) {
-		info.setLabel( item.getData() + ' (' + item.getPrettyTimestamp() + ')' );
+		info.setLabel( item.getData() + ' (' + item.getPrettyCreationTime() + ')' );
 	} );
 
 	// Append the app widgets
