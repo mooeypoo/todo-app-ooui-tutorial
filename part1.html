@@ -114,7 +114,7 @@ So now that we have our basic page, we need to start writing code. Our ToDo app 
 
 <pre class="lang:default decode:true">
 $( document ).ready( function () {
-	var input = new OO.ui.TextInputWiget(),
+	var input = new OO.ui.TextInputWidget(),
 		list = new OO.ui.SelectWidget();
 
 	// Append to the wrapper
@@ -192,7 +192,7 @@ It works! Now, let's add a little bit of extra flair to the app.
 Let's make sure that our list and our input are styled a bit better, and add a placeholder to the input. Let's go back to the piece in our code where we created the widgets, and add configuration to both:
 <pre class="lang:default decode:true">
 $( document ).ready( function () {
-	var input = new OO.ui.TextInputWiget( {
+	var input = new OO.ui.TextInputWidget( {
 			placeholder: 'ToDo item',
 			classes: [ 'todo-input' ]
 		} ),
